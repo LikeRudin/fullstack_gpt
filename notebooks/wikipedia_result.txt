@@ -1,0 +1,73 @@
+Wikipedia Result
+
+In February 2024, a malicious backdoor was introduced to the Linux utility xz within the liblzma library in versions 5.6.0 and 5.6.1 by an account using the name "Jia Tan". The backdoor gives an attacker who possesses a specific Ed448 private key remote code execution capabilities on the affected Linux system. The issue has been given the Common Vulnerabilities and Exposures number CVE-2024-3094 and has been assigned a CVSS score of 10.0, the highest possible score.
+While xz is commonly present in most Linux distributions, at the time of discovery the backdoored version had not yet been widely deployed to production systems, but was present in development versions of major distributions. The backdoor was discovered by the software developer Andres Freund, who announced his findings on 29 March 2024.
+
+
+== Background ==
+Microsoft employee and PostgreSQL developer Andres Freund reported the backdoor after investigating a performance regression in Debian Sid. Freund noticed that SSH connections were generating an unexpectedly high amount of CPU usage as well as causing errors in Valgrind, a memory debugging tool. Freund reported his finding to Openwall Project's open source security mailing list, which brought it to the attention of various software vendors. The attacker made efforts to obfuscate the code, as the backdoor consists of multiple stages that act together. 
+Once the compromised version is incorporated into the operating system, it alters the behavior of OpenSSH's SSH server daemon by abusing the systemd library, allowing the attacker to gain administrator access. According to the analysis by Red Hat, the backdoor can "enable a malicious actor to break sshd authentication and gain unauthorized access to the entire system remotely".
+A subsequent investigation found that the campaign to insert the backdoor into the XZ Utils project was a culmination of approximately three years of effort, between November 2021 and February 2024, by a user going by the name Jia Tan and the nickname JiaT75 to gain access to a position of trust within the project. After a period of pressure on the founder and head maintainer to hand over the control of the project via apparent sock puppetry, Jia Tan gained the position of co-maintainer of XZ Utils and was able to sign off on version 5.6.0, which introduced the backdoor, and version 5.6.1, which patched some anomalous behavior that could have been apparent during software testing of the operating system. 
+Some of the suspected sock puppetry pseudonyms include accounts with usernames like Jigar Kumar, krygorin4545, and misoeater91. It is suspected that the names Jia Tan, as well as the supposed code author Hans Jansen (for versions 5.6.0 and 5.6.1) are pseudonyms chosen by the participants of the campaign. Neither have any sort of visible public presence in software development beyond the short few years of the campaign. 
+The backdoor was notable for its level of sophistication and for the fact that the perpetrator practiced a high level of operational security for a long period of time while working to attain a position of trust. American security researcher Dave Aitel has suggested that it fits the pattern attributable to APT29, an advanced persistent threat actor believed to be working on behalf of the Russian SVR. Journalist Thomas Claburn suggested that it could be any state actor or a non-state actor with considerable resources.
+
+
+== Mechanism ==
+The malicious code is known to be in 5.6.0 and 5.6.1 releases of the XZ Utils software package. The exploit remains dormant unless a specific third-party patch of the SSH server is used. Under the right circumstances this interference could potentially enable a malicious actor to break sshd authentication and gain unauthorized access to the entire system remotely. The malicious mechanism consists of two compressed test files that contain the malicious binary code. These files are available in the git repository, but remain dormant unless extract
+
+XZ Utils (previously LZMA Utils) is a set of free software command-line lossless data compressors, including the programs lzma and xz, for Unix-like operating systems and, from version 5.0 onwards, Microsoft Windows. For compression/decompression the Lempel–Ziv–Markov chain algorithm (LZMA) is used. XZ Utils started as a Unix port of Igor Pavlov's LZMA-SDK that has been adapted to fit seamlessly into Unix environments and their usual structure and behavior.
+
+
+== Features ==
+XZ Utils can compress and decompress the xz and lzma file formats. Since the LZMA format has been considered legacy,
+XZ Utils by default compresses to xz.
+In most cases, xz achieves higher compression rates than alternatives like zip, gzip and bzip2. Decompression speed is higher than bzip2, but lower than gzip. Compression can be much slower than gzip, and is slower than bzip2 for high levels of compression, and is most useful when a compressed file will be used many times.
+XZ Utils consists of two major components:
+
+xz, the command-line compressor and decompressor (analogous to gzip)
+liblzma, a software library with an API similar to zlib
+Various command shortcuts exist, such as lzma (for xz --format=lzma), unxz (for xz --decompress; analogous to gunzip) and xzcat (for unxz --stdout; analogous to zcat).
+
+
+== Usage ==
+Both the behavior of the software and the properties of the file format have been designed to work similarly to those of the popular Unix compressing tools gzip and bzip2.
+Just like gzip and bzip, xz and lzma can only compress single files (or data streams) as input. They cannot bundle multiple files into a single archive –  to do this an archiving program is used first, such as tar.
+Compressing an archive:
+
+Decompressing the archive:
+
+Version 1.22 or greater of the GNU implementation of tar has transparent support for tarballs compressed with lzma and xz, using the switches --xz or -J for xz compression, and --lzma for LZMA compression.
+Creating an archive and compressing it:
+
+Decompressing the archive and extracting its contents:
+
+Single-letter tar example for archive with compress and decompress with extract using short suffix:
+
+xz has supported multi-threaded compression (with the -T flag) since 2014, version 5.2.0; since version 5.4.0 threaded decompression has been implemented. Threaded decompression requires multiple compressed blocks within a stream which are created by the threaded compression interface. The number of threads can be less than defined if the file is not big enough for threading with the given settings or if using more threads would exceed the memory usage limit.
+
+
+== The xz format ==
+The xz format improves on lzma by allowing for preprocessing filters. The exact filters used are similar to those used in 7z, as 7z's filters are available in the public domain via the LZMA SDK.
+
+
+== Development and adoption ==
+Development of XZ Utils took place within the Tukaani Project, a small group of developers who once maintained a Linux distribution based on Slackware.
+The .xz file format specification version 1.0.0 was officially released in January 2009.
+All of the source code for xz and liblzma has been released into the public domain. The XZ Utils source distribution additionally includes some optional scripts and an example program that are subject to various versions of the GNU General Public License (GPL). The resulting software xz and liblzma binaries are public domain, unless the optional LGPL getopt implementation is incorporated.
+Binaries are available for FreeBSD, NetBSD, Linux systems, Microsoft Windows, and FreeDOS. A number of Linux distributions, including Fedora, Slackware, Ubuntu, and Debian use xz for compressing their software packages. Arch Linux previously used xz to compress packages, but as of December 27, 2019, packages are compressed with Zstandard compression. Fedora Linux also switched to compressing its RPM packages with Zstandard with Fedora Linux 31. The GNU FTP archive also uses xz.
+
+
+== Backdoor in
+
+A backdoor is a typically covert method of bypassing normal authentication or encryption in a computer, product, embedded device (e.g. a home router), or its embodiment (e.g. part of a cryptosystem, algorithm, chipset, or even a "homunculus computer"—a tiny computer-within-a-computer such as that found in Intel's AMT technology). Backdoors are most often used for securing remote access to a computer, or obtaining access to plaintext in cryptosystems. From there it may be used to gain access to privileged information like passwords, corrupt or delete data on hard drives, or transfer information within autoschediastic networks.
+A backdoor may take the form of a hidden part of a program, a separate program (e.g. Back Orifice may subvert the system through a rootkit), code in the firmware of the hardware, or parts of an operating system such as Windows. Trojan horses can be used to create vulnerabilities in a device. A Trojan horse may appear to be an entirely legitimate program, but when executed, it triggers an activity that may install a backdoor. Although some are secretly installed, other backdoors are deliberate and widely known. These kinds of backdoors have "legitimate" uses such as providing the manufacturer with a way to restore user passwords.
+Many systems that store information within the cloud fail to create accurate security measures. If many systems are connected within the cloud, hackers can gain access to all other platforms through the most vulnerable system. Default passwords (or other default credentials) can function as backdoors if they are not changed by the user. Some debugging features can also act as backdoors if they are not removed in the release version. In 1993, the United States government attempted to deploy an encryption system, the Clipper chip, with an explicit backdoor for law enforcement and national security access. The chip was unsuccessful.
+Recent proposals to counter backdoors include creating a database of backdoors' triggers and then using neural networks to detect them.
+
+
+== Overview ==
+The threat of backdoors surfaced when multiuser and networked operating systems became widely adopted. Petersen and Turn discussed computer subversion in a paper published in the proceedings of the 1967 AFIPS Conference. They noted a class of active infiltration attacks that use "trapdoor" entry points into the system to bypass security facilities and permit direct access to data. The use of the word trapdoor here clearly coincides with more recent definitions of a backdoor. However, since the advent of public key cryptography the term trapdoor has acquired a different meaning (see trapdoor function), and thus the term "backdoor" is now preferred, only after the term trapdoor went out of use. More generally, such security breaches were discussed at length in a RAND Corporation task force report published under DARPA sponsorship by J.P. Anderson and D.J. Edwards in 1970.
+While initially targeting the computer vision domain, backdoor attacks have expanded to encompass various other domains, including text, audio, ML-based computer-aided design, and ML-based wireless signal classification. Additionally, vulnerabilities in backdoors have been demonstrated in deep generative models, reinforcement learning (e.g., AI GO), and deep graph models. These broad-ranging potential risks have prompted concerns from national security agencies regarding their potentially disastrous consequences.
+A backdoor in a login system might take the form of a hard coded user and password combination which gives access to the system. An example of this sort of backdoor was used as a plot device in the 1983 film WarGames, in which the architect of the "WOPR" computer system had inserted a hardcoded password-less account which gave the user access to the system, and to undocumented parts of the system (in particular, a video game-like simulation mode and direct interaction with the artificial intelligence).
+Although the number of backd
+
