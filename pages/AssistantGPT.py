@@ -117,11 +117,12 @@ st.markdown("""
             연구하고싶은 주제의 키워드를 입력해주세요.""")
 
 
-client = OpenAI()
 
 if api_key:
     if is_valid_api_key(api_key):
         st.sidebar.success("API 키가 유효합니다.")
+        
+        client = OpenAI(api_key=api_key)
         
         paint_history()
         user_input = st.chat_input("연구자료가 필요한 keyword를 입력해주세요")
