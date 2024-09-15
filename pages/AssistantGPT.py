@@ -9,11 +9,6 @@ import streamlit as st
 import json
 
  
-
-
-
-## tools
-
 def search_wikipedia(inputs):
     keyword = inputs["keyword"]
     retriever = WikipediaRetriever(top_k_results=3, lang="en")
