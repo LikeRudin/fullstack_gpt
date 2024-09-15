@@ -128,9 +128,7 @@ if api_key:
     if is_valid_api_key(api_key):
         st.sidebar.success("API 키가 유효합니다.")
         
-        # 대화 기록 표시
         paint_history()
-        # 사용자 입력 받기
         user_input = st.chat_input("연구자료가 필요한 keyword를 입력해주세요")
         if user_input:
            
